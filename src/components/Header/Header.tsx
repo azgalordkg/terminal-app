@@ -1,6 +1,6 @@
 import {MinusSmallIcon, StopIcon, XMarkIcon} from "@heroicons/react/24/outline";
 
-export const TerminalHeader = () => {
+export const Header = () => {
   return (
     <div className='relative flex justify-end p-[6px]'>
       <h2 className='absolute-center whitespace-nowrap text-stone-300 font-medium'>Azgalord@linux-desktop: ~</h2>

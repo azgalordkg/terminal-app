@@ -1,6 +1,6 @@
 import {TERMINAL_ACTION_BUTTONS} from "../../constants";
 
-export const TerminalActionButtons = () => {
+export const ActionButtons = () => {
   return (
     <div className='p-[6px]'>
       <div className={`flex`}>

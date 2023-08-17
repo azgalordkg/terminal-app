@@ -1,12 +1,16 @@
-import {TerminalWrapper, TerminalActionButtons, TerminalHeader} from "./components";
+import {Wrapper, ActionButtons, Header, CommandLine, CommandLinePrefix} from "./components";
 
 function App() {
   return (
     <div className='bg-[url(./assets/images/ubuntu-desktop.png)] w-screen h-screen relative'>
-      <TerminalWrapper>
-        <TerminalHeader/>
-        <TerminalActionButtons/>
-      </TerminalWrapper>
+      <Wrapper>
+        <Header/>
+        <ActionButtons/>
+
+        <CommandLine>
+          <CommandLinePrefix/>
+        </CommandLine>
+      </Wrapper>
     </div>
   )
 }

@@ -12,7 +12,11 @@ export default {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        ubuntuGray: '#3e3d39'
+        ubuntuGray: '#3e3d39',
+        ubuntuOrange: '#e95420',
+        ubuntuPurple: '#2d0a22',
+        ubuntuGreen: '#72d233',
+        ubuntuBlue: '#6f9ac9',
       }
     },
   },
