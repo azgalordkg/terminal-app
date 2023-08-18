@@ -25,7 +25,9 @@ module.exports = {
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh', 'prettier'],
-  rules: {},
+  rules: {
+    'react-hooks/exhaustive-deps': 'off',
+  },
   settings: {
     react: {
       version: 'detect', // Automatically includes the React version

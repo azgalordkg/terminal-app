@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { IGNORED_KEYS } from '@/constants'
+import { generateId } from '@/utils'
+import { Params } from './useControlText.types.ts'
 
-export const useControlText = () => {
+export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
   const [cursorPosition, setCursorPosition] = useState(0)
   const [isFocused, setIsFocused] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -27,6 +29,23 @@ export const useControlText = () => {
         })
       }
     }
+  }
+
+  const resetAllValues = () => {
+    setInputValue('')
+    setCursorPosition(0)
+    cursorPositionRef.current = 0
+    inputValueRef.current = ''
+  }
+
+  const handleEnterKeyPress = () => {
+    const historyLine = {
+      id: generateId(),
+      value: inputValueRef.current,
+    }
+
+    handleReadAndExecuteCommand(historyLine)
+    resetAllValues()
   }
 
   const handleArrowLeft = () => {
@@ -79,7 +98,10 @@ export const useControlText = () => {
       handleBackspace()
     }
     if (e.key === 'Space') {
-      handleCommandEnter('\u00A0\u00A0\u00A0')
+      handleCommandEnter('\u00A0')
+    }
+    if (e.key === 'Enter') {
+      handleEnterKeyPress()
     }
   }, [])
 
@@ -99,21 +121,11 @@ export const useControlText = () => {
     document.removeEventListener('keydown', handleEnterText)
   }
 
-  const cutFirstPartOfText = (text: string) => {
-    return text.slice(0, cursorPosition)
-  }
-
-  const cutSecondPartOfText = (text: string) => {
-    return text.slice(cursorPosition + 1)
-  }
-
   return {
     cursorPosition,
     inputValue,
     isFocused,
     handleFocus,
     handleFocusBlur,
-    cutFirstPartOfText,
-    cutSecondPartOfText,
   }
 }

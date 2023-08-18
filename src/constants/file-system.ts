@@ -2,6 +2,10 @@ import { Directory } from '@/types/file-system.ts'
 
 export const DIRECTORIES = 'directories'
 
+export const USER = 'azgalord@linux-desktop'
+
+export const INITIAL_DIRECTORY_HISTORY = ['root']
+
 export const INITIAL_DIRECTORY: Directory = {
   name: 'root',
   type: 'directory',

@@ -1,49 +1,38 @@
-import { FC, PropsWithChildren } from 'react'
+import { FC } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
-import { useControlText } from '@/hooks'
+import { useControlText, useDirectories } from '@/hooks'
+import { ClInput, CLPrefix, CLLineWrapper } from '@/components'
 
-export const CommandLine: FC<PropsWithChildren> = ({ children }) => {
+export const CommandLine: FC = () => {
+  const { handleReadAndExecuteCommand, currentDirectory, historyLines } =
+    useDirectories()
+
   const {
     cursorPosition,
     inputValue,
     isFocused,
     handleFocus,
     handleFocusBlur,
-    cutFirstPartOfText,
-    cutSecondPartOfText,
-  } = useControlText()
+  } = useControlText({ handleReadAndExecuteCommand })
 
   return (
     <OutsideClickHandler onOutsideClick={handleFocusBlur}>
-      <div onClick={handleFocus} className="bg-ubuntuPurple h-[400px]">
-        <div className="p-[6px]">
-          <div className="flex items-center">
-            {children}
-            <pre className="flex items-center">
-              <span className="text-white">
-                {cutFirstPartOfText(inputValue)}
-              </span>
-              <div className="relative">
-                <span
-                  className={`${
-                    isFocused ? 'cursor-text' : 'cursor-text_disabled'
-                  }`}
-                >
-                  {inputValue[cursorPosition]}
-                </span>
-                <span
-                  className={`${isFocused ? 'cursor' : 'cursor_disabled'} ${
-                    inputValue[cursorPosition] ? 'cursor-absolute' : ''
-                  }`}
-                />
-              </div>
-              {cursorPosition !== inputValue.length && (
-                <span className="text-white">
-                  {cutSecondPartOfText(inputValue)}
-                </span>
-              )}
-            </pre>
-          </div>
+      <div onClick={handleFocus} className="bg-ubuntuPurple h-[400px] pb-2">
+        <div className="overflow-auto max-h-[100%]">
+          {historyLines.map(({ id, name, value }) => (
+            <CLLineWrapper key={id}>
+              {name && <CLPrefix directory={name} />}
+              <ClInput inputValue={value} isReadOnly />
+            </CLLineWrapper>
+          ))}
+          <CLLineWrapper>
+            <CLPrefix directory={currentDirectory} />
+            <ClInput
+              cursorPosition={cursorPosition}
+              inputValue={inputValue}
+              isFocused={isFocused}
+            />
+          </CLLineWrapper>
         </div>
       </div>
     </OutsideClickHandler>
