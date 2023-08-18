@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "precommit": "lint-staged",
-    "prepare": "husky install"
+    "postinstall": "husky install"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -45,10 +45,5 @@
     "src/**/*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn precommit"
-    }
   }
 }
