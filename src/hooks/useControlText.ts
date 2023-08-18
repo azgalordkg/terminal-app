@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { IGNORED_KEYS } from '@/constants'
 
 export const useControlText = () => {
-  const x = 1
   const [cursorPosition, setCursorPosition] = useState(0)
   const [isFocused, setIsFocused] = useState(false)
   const [inputValue, setInputValue] = useState('')
