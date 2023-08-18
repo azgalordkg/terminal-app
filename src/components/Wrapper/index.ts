@@ -1,1 +1,1 @@
-export * from './Wrapper.tsx';
+export * from './Wrapper.tsx'

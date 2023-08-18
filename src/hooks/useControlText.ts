@@ -1,61 +1,85 @@
-import {useCallback, useEffect, useRef, useState} from "react";
-import {IGNORED_KEYS} from "../constants";
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { IGNORED_KEYS } from '@/constants'
 
 export const useControlText = () => {
-  const [cursorPosition, setCursorPosition] = useState(0);
-  const [isFocused, setIsFocused] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [cursorPosition, setCursorPosition] = useState(0)
+  const [isFocused, setIsFocused] = useState(false)
+  const [inputValue, setInputValue] = useState('')
 
-  const inputValueRef = useRef(inputValue);
+  const inputValueRef = useRef(inputValue)
+  const cursorPositionRef = useRef(cursorPosition)
 
   const handleBackspace = () => {
-    setInputValue((prevState) => {
-      const value = prevState.slice(0, -1)
-      inputValueRef.current = value;
-      return value;
-    });
-    setCursorPosition((prevState) => prevState - 1);
+    if (cursorPositionRef.current > 0) {
+      setInputValue((prevState) => {
+        const value =
+          prevState.slice(0, cursorPositionRef.current) +
+          prevState.slice(cursorPositionRef.current + 1)
+        inputValueRef.current = value
+        return value
+      })
+
+      if (cursorPositionRef.current > 0) {
+        setCursorPosition((prevState) => {
+          const value = prevState - 1
+          cursorPositionRef.current = value
+          return value
+        })
+      }
+    }
   }
 
   const handleArrowLeft = () => {
-    setCursorPosition((prevState) => {
-      if (prevState > 0) {
-        return prevState - 1;
-      }
-      return prevState;
-    });
+    if (cursorPositionRef.current > 0) {
+      setCursorPosition((prevState) => {
+        const value = prevState - 1
+        cursorPositionRef.current = value
+        return value
+      })
+    }
   }
 
   const handleArrowRight = () => {
-    setCursorPosition((prevState) => {
-      if (prevState < inputValueRef.current.length) {
-        return prevState + 1;
-      }
-      return prevState;
-    });
+    if (cursorPositionRef.current < inputValueRef.current.length) {
+      setCursorPosition((prevState) => {
+        const value = prevState + 1
+        cursorPositionRef.current = value
+        return value
+      })
+    }
   }
 
   const handleCommandEnter = (key: string) => {
     setInputValue((prevState) => {
-      const value = prevState + key
-      inputValueRef.current = value;
-      return value;
-    });
-    setCursorPosition((prevState) => prevState + 1);
+      const value =
+        prevState.slice(0, cursorPositionRef.current) +
+        key +
+        prevState.slice(cursorPositionRef.current)
+      inputValueRef.current = value
+      return value
+    })
+    setCursorPosition((prevState) => {
+      const value = prevState + 1
+      cursorPositionRef.current = value
+      return value
+    })
   }
 
   const handleEnterText = useCallback((e: KeyboardEvent) => {
     if (!IGNORED_KEYS.includes(e.key)) {
-      handleCommandEnter(e.key);
+      handleCommandEnter(e.key)
     }
     if (e.key === 'ArrowLeft') {
-      handleArrowLeft();
+      handleArrowLeft()
     }
     if (e.key === 'ArrowRight') {
-      handleArrowRight();
+      handleArrowRight()
     }
     if (e.key === 'Backspace') {
-      handleBackspace();
+      handleBackspace()
+    }
+    if (e.key === 'Space') {
+      handleCommandEnter('\u00A0\u00A0\u00A0')
     }
   }, [])
 

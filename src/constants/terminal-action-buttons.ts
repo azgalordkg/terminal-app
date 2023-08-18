@@ -23,4 +23,4 @@ export const TERMINAL_ACTION_BUTTONS = [
     label: 'Help',
     id: 5,
   },
-];
+]
