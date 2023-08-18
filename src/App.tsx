@@ -1,4 +1,4 @@
-import {Wrapper, ActionButtons, Header, CommandLine, CommandLinePrefix} from "./components";
+import {Wrapper, ActionButtons, Header, CommandLine, CommandLinePrefix} from "@/components";
 
 function App() {
   return (

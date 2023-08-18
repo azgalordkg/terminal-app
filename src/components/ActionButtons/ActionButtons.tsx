@@ -1,4 +1,4 @@
-import {TERMINAL_ACTION_BUTTONS} from "../../constants";
+import {TERMINAL_ACTION_BUTTONS} from "@/constants";
 
 export const ActionButtons = () => {
   return (

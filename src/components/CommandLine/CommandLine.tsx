@@ -1,6 +1,6 @@
 import {FC, PropsWithChildren} from "react";
 import OutsideClickHandler from 'react-outside-click-handler';
-import {useControlText} from "../../hooks";
+import {useControlText} from "@/hooks";
 
 export const CommandLine: FC<PropsWithChildren> = ({children}) => {
   const {
@@ -20,7 +20,7 @@ export const CommandLine: FC<PropsWithChildren> = ({children}) => {
         <div className='p-[6px]'>
           <div className='flex items-center'>
             {children}
-            <span className='flex items-center'>
+            <pre className='flex items-center'>
               <span className='text-white'>{cutFirstPartOfText(inputValue)}</span>
               <div className='relative'>
                 <span
@@ -32,7 +32,7 @@ export const CommandLine: FC<PropsWithChildren> = ({children}) => {
               {cursorPosition !== inputValue.length && (
                 <span className='text-white'>{cutSecondPartOfText(inputValue)}</span>
               )}
-            </span>
+            </pre>
           </div>
         </div>
       </div>
