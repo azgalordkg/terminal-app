@@ -1,6 +1,6 @@
-import {Directory} from "../types/file-system.ts";
+import { Directory } from '@/types/file-system.ts'
 
-export const DIRECTORIES = 'directories';
+export const DIRECTORIES = 'directories'
 
 export const INITIAL_DIRECTORY: Directory = {
   name: 'root',
@@ -25,8 +25,8 @@ export const INITIAL_DIRECTORY: Directory = {
         {
           name: 'bin',
           type: 'directory',
-        }
-      ]
+        },
+      ],
     },
     {
       name: 'etc',
@@ -35,6 +35,6 @@ export const INITIAL_DIRECTORY: Directory = {
     {
       name: 'var',
       type: 'directory',
-    }
+    },
   ],
 }

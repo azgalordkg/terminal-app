@@ -23,25 +23,25 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "components/*": [
-        "src/components/*"
+        "./src/components/*"
       ],
       "context/*": [
-        "src/context/*"
+        "./src/context/*"
       ],
       "constants/*": [
-        "src/constants/*"
+        "./src/constants/*"
       ],
       "hooks/*": [
-        "src/hooks/*"
+        "./src/hooks/*"
       ],
       "types/*": [
-        "src/types/*"
+        "./src/types/*"
       ],
       "utils/*": [
-        "src/utils/*"
+        "./src/utils/*"
       ]
     }
   },

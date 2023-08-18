@@ -1,16 +1,16 @@
-import {createContext, FC, PropsWithChildren} from "react";
-import {FileSystemContextType} from "./FileSystemContext.types.ts";
-import {LocalStorage} from "../../utils";
-import {DIRECTORIES, INITIAL_DIRECTORY} from "../../constants";
+import { createContext, FC, PropsWithChildren } from 'react'
+import { FileSystemContextType } from './FileSystemContext.types.ts'
+import { LocalStorage } from '@/utils'
+import { DIRECTORIES, INITIAL_DIRECTORY } from '@/constants'
 
 export const FileSystemContext = createContext<FileSystemContextType>({
-  createInitialFileSystem: () => {
-  },
-  getDirectories: () => {
-  }
-} as FileSystemContextType);
+  createInitialFileSystem: () => {},
+  getDirectories: () => {},
+} as FileSystemContextType)
 
-export const FileSystemContextProvider: FC<PropsWithChildren> = ({children}) => {
+export const FileSystemContextProvider: FC<PropsWithChildren> = ({
+  children,
+}) => {
   const createInitialFileSystem = () => {
     const directories = LocalStorage.getStorage(DIRECTORIES)
     if (!directories) {
@@ -23,8 +23,10 @@ export const FileSystemContextProvider: FC<PropsWithChildren> = ({children}) => 
   }
 
   return (
-    <FileSystemContext.Provider value={{createInitialFileSystem, getDirectories}}>
+    <FileSystemContext.Provider
+      value={{ createInitialFileSystem, getDirectories }}
+    >
       {children}
     </FileSystemContext.Provider>
   )
-};
+}

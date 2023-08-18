@@ -4,7 +4,7 @@ export class LocalStorage {
     if (data) {
       return JSON.parse(data)
     }
-    return null;
+    return null
   }
 
   public static setStorage(name: string, value: unknown) {
