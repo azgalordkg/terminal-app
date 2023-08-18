@@ -1,2 +1,2 @@
 export * from './useControlText/useControlText.ts'
-export * from './useDirectories.ts'
+export * from './useDirectories/useDirectories.ts'

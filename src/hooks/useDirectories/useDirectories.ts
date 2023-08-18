@@ -1,11 +1,12 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CommandLineHistoryObject } from 'types/command-line.ts'
 import { useFileSystemContext } from 'context/hooks'
 import { Directory } from 'types/file-system.ts'
 import { generateId } from '@/utils'
 import { INITIAL_DIRECTORY_HISTORY } from '@/constants'
+import { Params } from './useDirectories.types.ts'
 
-export const useDirectories = () => {
+export const useDirectories = ({ scrollRef }: Params) => {
   const { directoryTree } = useFileSystemContext()
 
   const [directoriesHistory, setDirectoriesHistory] = useState<string[]>(
@@ -20,6 +21,13 @@ export const useDirectories = () => {
   const handleAddHistoryLine = (historyLine: CommandLineHistoryObject) => {
     setHistoryLines((prevState) => [...prevState, historyLine])
   }
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current?.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [historyLines])
 
   const currentDirectoryTreeRef = useRef({} as Directory)
 

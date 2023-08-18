@@ -88,23 +88,28 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
     if (!IGNORED_KEYS.includes(e.key)) {
       handleCommandEnter(e.key)
     }
-    if (e.key === 'ArrowLeft') {
-      handleArrowLeft()
-    }
-    if (e.key === 'ArrowRight') {
-      handleArrowRight()
-    }
-    if (e.key === 'Backspace') {
-      handleBackspace()
-    }
-    if (e.key === 'Space') {
-      handleCommandEnter('\u00A0')
-    }
-    if (e.key === 'Enter') {
-      handleEnterKeyPress()
-    }
-    if (e.key === 'Tab') {
-      e.preventDefault()
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        handleArrowLeft()
+        break
+      case 'ArrowRight':
+        handleArrowRight()
+        break
+      case 'Backspace':
+        handleBackspace()
+        break
+      case 'Space':
+        handleCommandEnter('\u00A0')
+        break
+      case 'Enter':
+        handleEnterKeyPress()
+        break
+      case 'Tab':
+        e.preventDefault()
+        break
+      default:
+        break
     }
   }, [])
 
