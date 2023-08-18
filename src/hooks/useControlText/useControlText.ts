@@ -103,6 +103,9 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
     if (e.key === 'Enter') {
       handleEnterKeyPress()
     }
+    if (e.key === 'Tab') {
+      e.preventDefault()
+    }
   }, [])
 
   useEffect(() => {

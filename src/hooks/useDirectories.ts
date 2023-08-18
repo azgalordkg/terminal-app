@@ -75,8 +75,10 @@ export const useDirectories = () => {
         })
         break
       case undefined:
+      case '':
         setDirectoriesHistory(INITIAL_DIRECTORY_HISTORY)
         setCurrentDirectory('root')
+        currentDirectoryRef.current = 'root'
         break
       default:
         setCurrentDirectory(value)
