@@ -71,9 +71,9 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
   const handleCommandEnter = (key: string) => {
     setInputValue((prevState) => {
       const value =
-        prevState.slice(0, cursorPositionRef.current) +
+        prevState.slice(0, cursorPositionRef.current - 1) +
         key +
-        prevState.slice(cursorPositionRef.current)
+        prevState.slice(cursorPositionRef.current - 1)
       inputValueRef.current = value
       return value
     })

@@ -66,8 +66,24 @@ export const useDirectories = ({ scrollRef }: Params) => {
     handleAddHistoryLine(historyLine)
   }
 
+  const checkExistsDirectory = (directoryName: string) => {
+    return currentDirectoryTreeRef.current?.children?.some(
+      (child) => child.name === directoryName,
+    )
+  }
+
+  const generateErrorHistoryLine = (directoryName: string) => {
+    const historyLine = {
+      value: `cd: ${directoryName}: No such file or directory`,
+      id: generateId(),
+    }
+
+    handleAddHistoryLine(historyLine)
+  }
+
   const handleCd = (command: string[]) => {
     const value = command[1]
+    const isExistsDirectory = checkExistsDirectory(value)
 
     switch (value) {
       case '.':
@@ -89,9 +105,13 @@ export const useDirectories = ({ scrollRef }: Params) => {
         currentDirectoryRef.current = 'root'
         break
       default:
-        setCurrentDirectory(value)
-        currentDirectoryRef.current = value
-        setDirectoriesHistory((prevState) => [...prevState, value])
+        if (isExistsDirectory) {
+          setCurrentDirectory(value)
+          currentDirectoryRef.current = value
+          setDirectoriesHistory((prevState) => [...prevState, value])
+        } else {
+          generateErrorHistoryLine(value)
+        }
     }
   }
 
