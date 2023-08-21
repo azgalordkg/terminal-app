@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { IGNORED_KEYS } from '@/constants'
 import { generateId } from '@/utils'
 import { Params } from './useControlText.types.ts'
@@ -8,25 +8,15 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
   const [isFocused, setIsFocused] = useState(false)
   const [inputValue, setInputValue] = useState('')
 
-  const inputValueRef = useRef(inputValue)
-  const cursorPositionRef = useRef(cursorPosition)
-
   const handleBackspace = () => {
-    if (cursorPositionRef.current > 0) {
-      setInputValue((prevState) => {
-        const value =
-          prevState.slice(0, cursorPositionRef.current) +
-          prevState.slice(cursorPositionRef.current + 1)
-        inputValueRef.current = value
-        return value
-      })
+    if (cursorPosition > 0) {
+      const nextValue =
+        inputValue.slice(0, cursorPosition - 1) +
+        inputValue.slice(cursorPosition)
+      setInputValue(nextValue)
 
-      if (cursorPositionRef.current > 0) {
-        setCursorPosition((prevState) => {
-          const value = prevState - 1
-          cursorPositionRef.current = value
-          return value
-        })
+      if (cursorPosition > 0) {
+        setCursorPosition(cursorPosition - 1)
       }
     }
   }
@@ -34,14 +24,12 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
   const resetAllValues = () => {
     setInputValue('')
     setCursorPosition(0)
-    cursorPositionRef.current = 0
-    inputValueRef.current = ''
   }
 
   const handleEnterKeyPress = () => {
     const historyLine = {
       id: generateId(),
-      value: inputValueRef.current,
+      value: inputValue,
     }
 
     handleReadAndExecuteCommand(historyLine)
@@ -49,42 +37,28 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
   }
 
   const handleArrowLeft = () => {
-    if (cursorPositionRef.current > 0) {
-      setCursorPosition((prevState) => {
-        const value = prevState - 1
-        cursorPositionRef.current = value
-        return value
-      })
+    if (cursorPosition > 0) {
+      setCursorPosition(cursorPosition - 1)
     }
   }
 
   const handleArrowRight = () => {
-    if (cursorPositionRef.current < inputValueRef.current.length) {
-      setCursorPosition((prevState) => {
-        const value = prevState + 1
-        cursorPositionRef.current = value
-        return value
-      })
+    if (cursorPosition < inputValue.length) {
+      setCursorPosition(cursorPosition + 1)
     }
   }
 
   const handleCommandEnter = (key: string) => {
-    setInputValue((prevState) => {
-      const value =
-        prevState.slice(0, cursorPositionRef.current - 1) +
-        key +
-        prevState.slice(cursorPositionRef.current - 1)
-      inputValueRef.current = value
-      return value
-    })
-    setCursorPosition((prevState) => {
-      const value = prevState + 1
-      cursorPositionRef.current = value
-      return value
-    })
+    const nextValue =
+      inputValue.slice(0, cursorPosition) +
+      key +
+      inputValue.slice(cursorPosition)
+
+    setInputValue(nextValue)
+    setCursorPosition(cursorPosition + 1)
   }
 
-  const handleEnterText = useCallback((e: KeyboardEvent) => {
+  const handleEnterText = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!IGNORED_KEYS.includes(e.key)) {
       handleCommandEnter(e.key)
     }
@@ -111,23 +85,11 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
       default:
         break
     }
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      document.removeEventListener('keydown', handleEnterText)
-    }
-  }, [handleEnterText])
-
-  const handleFocus = () => {
-    setIsFocused(true)
-    document.addEventListener('keydown', handleEnterText)
   }
 
-  const handleFocusBlur = () => {
-    setIsFocused(false)
-    document.removeEventListener('keydown', handleEnterText)
-  }
+  const handleFocus = () => setIsFocused(true)
+
+  const handleFocusBlur = () => setIsFocused(false)
 
   return {
     cursorPosition,
@@ -135,5 +97,6 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
     isFocused,
     handleFocus,
     handleFocusBlur,
+    handleEnterText,
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CommandLineHistoryObject } from 'types/command-line.ts'
 import { useFileSystemContext } from 'context/hooks'
 import { Directory } from 'types/file-system.ts'
@@ -13,10 +13,11 @@ export const useDirectories = ({ scrollRef }: Params) => {
     INITIAL_DIRECTORY_HISTORY,
   )
   const [currentDirectory, setCurrentDirectory] = useState<string>('root')
+  const [currentDirectoryTree, setCurrentDirectoryTree] =
+    useState<Directory | null>(directoryTree)
   const [historyLines, setHistoryLines] = useState<CommandLineHistoryObject[]>(
     [],
   )
-  const currentDirectoryRef = useRef(currentDirectory)
 
   const handleAddHistoryLine = (historyLine: CommandLineHistoryObject) => {
     setHistoryLines((prevState) => [...prevState, historyLine])
@@ -28,8 +29,6 @@ export const useDirectories = ({ scrollRef }: Params) => {
       behavior: 'smooth',
     })
   }, [historyLines])
-
-  const currentDirectoryTreeRef = useRef({} as Directory)
 
   useMemo(() => {
     let currentDirectory: Directory | null = null
@@ -44,13 +43,12 @@ export const useDirectories = ({ scrollRef }: Params) => {
       }
     }
 
-    currentDirectoryTreeRef.current = currentDirectory as Directory
-    return currentDirectory
+    setCurrentDirectoryTree(currentDirectory)
   }, [directoriesHistory, directoryTree])
 
   const returnLsValue = () => {
-    if (currentDirectoryTreeRef.current?.children) {
-      return currentDirectoryTreeRef.current?.children
+    if (currentDirectoryTree?.children) {
+      return currentDirectoryTree?.children
         ?.map((child) => child.name)
         .join(' ')
     }
@@ -67,7 +65,7 @@ export const useDirectories = ({ scrollRef }: Params) => {
   }
 
   const checkExistsDirectory = (directoryName: string) => {
-    return currentDirectoryTreeRef.current?.children?.some(
+    return currentDirectoryTree?.children?.some(
       (child) => child.name === directoryName,
     )
   }
@@ -84,30 +82,30 @@ export const useDirectories = ({ scrollRef }: Params) => {
   const handleCd = (command: string[]) => {
     const value = command[1]
     const isExistsDirectory = checkExistsDirectory(value)
+    const prevHistory = directoriesHistory.slice(
+      0,
+      directoriesHistory.length - 1,
+    )
+    const prevHistoryItem = prevHistory[prevHistory.length - 1]
 
     switch (value) {
       case '.':
         break
       case '..':
-        setDirectoriesHistory((prevState) => {
-          const prevHistory = prevState.slice(0, prevState.length - 1)
-          const prevHistoryItem = prevHistory[prevHistory.length - 1]
-
-          currentDirectoryRef.current = prevHistoryItem
+        if (currentDirectory !== 'root') {
+          setDirectoriesHistory(prevHistory)
           setCurrentDirectory(prevHistoryItem)
-          return prevHistory
-        })
+        }
+
         break
       case undefined:
       case '':
         setDirectoriesHistory(INITIAL_DIRECTORY_HISTORY)
         setCurrentDirectory('root')
-        currentDirectoryRef.current = 'root'
         break
       default:
         if (isExistsDirectory) {
           setCurrentDirectory(value)
-          currentDirectoryRef.current = value
           setDirectoriesHistory((prevState) => [...prevState, value])
         } else {
           generateErrorHistoryLine(value)
@@ -120,7 +118,7 @@ export const useDirectories = ({ scrollRef }: Params) => {
   ) => {
     const command = historyLine.value.split(' ')
     const firstCommand = command[0]
-    handleAddHistoryLine({ ...historyLine, name: currentDirectoryRef.current })
+    handleAddHistoryLine({ ...historyLine, name: currentDirectory })
 
     switch (firstCommand) {
       case 'ls':
