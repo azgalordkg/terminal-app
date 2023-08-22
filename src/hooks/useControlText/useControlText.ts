@@ -1,29 +1,37 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { IGNORED_KEYS } from '@/constants'
 import { generateId } from '@/utils'
 import { Params } from './useControlText.types.ts'
+import { useInputValueContext } from 'context/hooks'
 
-export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
-  const [cursorPosition, setCursorPosition] = useState(0)
-  const [isFocused, setIsFocused] = useState(false)
-  const [inputValue, setInputValue] = useState('')
+export const useControlText = ({
+  handleReadAndExecuteCommand,
+  handleTabPress,
+}: Params) => {
+  const {
+    cursorPosition,
+    isFocused,
+    inputValue,
+    handleSetInputValue,
+    handleSetCursorPosition,
+  } = useInputValueContext()
 
   const handleBackspace = () => {
     if (cursorPosition > 0) {
       const nextValue =
         inputValue.slice(0, cursorPosition - 1) +
         inputValue.slice(cursorPosition)
-      setInputValue(nextValue)
+      handleSetInputValue(nextValue)
 
       if (cursorPosition > 0) {
-        setCursorPosition(cursorPosition - 1)
+        handleSetCursorPosition(cursorPosition - 1)
       }
     }
   }
 
   const resetAllValues = () => {
-    setInputValue('')
-    setCursorPosition(0)
+    handleSetInputValue('')
+    handleSetCursorPosition(0)
   }
 
   const handleEnterKeyPress = () => {
@@ -38,13 +46,13 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
 
   const handleArrowLeft = () => {
     if (cursorPosition > 0) {
-      setCursorPosition(cursorPosition - 1)
+      handleSetCursorPosition(cursorPosition - 1)
     }
   }
 
   const handleArrowRight = () => {
     if (cursorPosition < inputValue.length) {
-      setCursorPosition(cursorPosition + 1)
+      handleSetCursorPosition(cursorPosition + 1)
     }
   }
 
@@ -54,8 +62,19 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
       key +
       inputValue.slice(cursorPosition)
 
-    setInputValue(nextValue)
-    setCursorPosition(cursorPosition + 1)
+    handleSetInputValue(nextValue)
+    handleSetCursorPosition(cursorPosition + 1)
+  }
+
+  const handleTabKeyPress = () => {
+    if (inputValue.length > 0) {
+      const historyLine = {
+        id: generateId(),
+        value: inputValue,
+      }
+
+      handleTabPress(historyLine)
+    }
   }
 
   const handleEnterText = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -81,22 +100,17 @@ export const useControlText = ({ handleReadAndExecuteCommand }: Params) => {
         break
       case 'Tab':
         e.preventDefault()
+        handleTabKeyPress()
         break
       default:
         break
     }
   }
 
-  const handleFocus = () => setIsFocused(true)
-
-  const handleFocusBlur = () => setIsFocused(false)
-
   return {
     cursorPosition,
     inputValue,
     isFocused,
-    handleFocus,
-    handleFocusBlur,
     handleEnterText,
   }
 }

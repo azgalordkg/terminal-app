@@ -15,6 +15,14 @@ export const INITIAL_DIRECTORY: Directory = {
       type: 'directory',
     },
     {
+      name: 'bin2',
+      type: 'directory',
+    },
+    {
+      name: 'bin3',
+      type: 'directory',
+    },
+    {
       name: 'bin',
       type: 'directory',
     },

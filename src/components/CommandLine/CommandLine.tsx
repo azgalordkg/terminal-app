@@ -2,20 +2,22 @@ import React, { FC, useRef } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
 import { useControlText, useDirectories } from '@/hooks'
 import { ClInput, CLPrefix, CLLineWrapper } from '@/components'
+import { useInputValueContext } from 'context/hooks'
 
 export const CommandLine: FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { handleReadAndExecuteCommand, currentDirectory, historyLines } =
-    useDirectories({ scrollRef })
+
+  const { handleFocus, handleFocusBlur } = useInputValueContext()
 
   const {
-    cursorPosition,
-    inputValue,
-    isFocused,
-    handleFocus,
-    handleFocusBlur,
-    handleEnterText,
-  } = useControlText({ handleReadAndExecuteCommand })
+    handleReadAndExecuteCommand,
+    currentDirectory,
+    historyLines,
+    handleTabPress,
+  } = useDirectories({ scrollRef })
+
+  const { cursorPosition, inputValue, isFocused, handleEnterText } =
+    useControlText({ handleReadAndExecuteCommand, handleTabPress })
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (isFocused) {

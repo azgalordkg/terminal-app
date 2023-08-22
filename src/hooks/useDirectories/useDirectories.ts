@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CommandLineHistoryObject } from 'types/command-line.ts'
-import { useFileSystemContext } from 'context/hooks'
+import { useFileSystemContext, useInputValueContext } from 'context/hooks'
 import { Directory } from 'types/file-system.ts'
 import { generateId } from '@/utils'
 import { INITIAL_DIRECTORY_HISTORY } from '@/constants'
@@ -8,6 +8,8 @@ import { Params } from './useDirectories.types.ts'
 
 export const useDirectories = ({ scrollRef }: Params) => {
   const { directoryTree } = useFileSystemContext()
+  const { handleSetInputValue, handleSetCursorPosition } =
+    useInputValueContext()
 
   const [directoriesHistory, setDirectoriesHistory] = useState<string[]>(
     INITIAL_DIRECTORY_HISTORY,
@@ -46,18 +48,17 @@ export const useDirectories = ({ scrollRef }: Params) => {
     setCurrentDirectoryTree(currentDirectory)
   }, [directoriesHistory, directoryTree])
 
-  const returnLsValue = () => {
-    if (currentDirectoryTree?.children) {
-      return currentDirectoryTree?.children
-        ?.map((child) => child.name)
-        .join(' ')
+  const returnLsValue = (values?: string[]) => {
+    if (values) {
+      return values?.map((name) => name).join(' ')
     }
     return ''
   }
 
   const handleLs = () => {
+    const values = currentDirectoryTree?.children?.map((child) => child.name)
     const historyLine = {
-      value: returnLsValue(),
+      value: returnLsValue(values),
       id: generateId(),
     }
 
@@ -113,11 +114,22 @@ export const useDirectories = ({ scrollRef }: Params) => {
     }
   }
 
-  const handleReadAndExecuteCommand = (
+  const addHistoryAndReturnCommand = (
     historyLine: CommandLineHistoryObject,
   ) => {
     const command = historyLine.value.split(' ')
     const firstCommand = command[0]
+
+    return {
+      command,
+      firstCommand,
+    }
+  }
+
+  const handleReadAndExecuteCommand = (
+    historyLine: CommandLineHistoryObject,
+  ) => {
+    const { firstCommand, command } = addHistoryAndReturnCommand(historyLine)
     handleAddHistoryLine({ ...historyLine, name: currentDirectory })
 
     switch (firstCommand) {
@@ -126,6 +138,77 @@ export const useDirectories = ({ scrollRef }: Params) => {
         break
       case 'cd':
         handleCd(command)
+        break
+      case 'clear':
+        setHistoryLines([])
+        break
+      default:
+        break
+    }
+  }
+
+  const handleTabPressWithEmptyValue = (
+    historyLine: CommandLineHistoryObject,
+  ) => {
+    if (currentDirectoryTree?.children?.length) {
+      handleAddHistoryLine({ ...historyLine, name: currentDirectory })
+      handleLs()
+    }
+  }
+
+  const handleTabPressWithValue = (
+    value: string,
+    historyLine: CommandLineHistoryObject,
+  ) => {
+    if (currentDirectoryTree?.children?.length) {
+      const directories = []
+      for (const child of currentDirectoryTree.children) {
+        if (child.name.startsWith(value)) {
+          directories.push(child.name)
+        }
+      }
+
+      if (!directories.length) {
+        return
+      }
+
+      const directoriesHistoryLine = {
+        value: returnLsValue(directories),
+        id: generateId(),
+      }
+
+      if (directories.length > 1) {
+        handleAddHistoryLine({ ...historyLine, name: currentDirectory })
+        handleAddHistoryLine(directoriesHistoryLine)
+      } else {
+        const nextCommand = `cd ${directories[0]}`
+        handleSetInputValue(nextCommand)
+        handleSetCursorPosition(nextCommand.length)
+      }
+    }
+  }
+
+  const handleTabPressWithCd = (
+    command: string[],
+    historyLine: CommandLineHistoryObject,
+  ) => {
+    const value = command[1]
+    switch (value) {
+      case undefined:
+      case '':
+        handleTabPressWithEmptyValue(historyLine)
+        break
+      default:
+        handleTabPressWithValue(value, historyLine)
+    }
+  }
+
+  const handleTabPress = (historyLine: CommandLineHistoryObject) => {
+    const { firstCommand, command } = addHistoryAndReturnCommand(historyLine)
+
+    switch (firstCommand) {
+      case 'cd':
+        handleTabPressWithCd(command, historyLine)
         break
       default:
         break
@@ -137,5 +220,6 @@ export const useDirectories = ({ scrollRef }: Params) => {
     historyLines,
     handleAddHistoryLine,
     handleReadAndExecuteCommand,
+    handleTabPress,
   }
 }

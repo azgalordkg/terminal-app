@@ -1,10 +1,12 @@
-import { FileSystemContextProvider } from '@/context'
+import { FileSystemContextProvider, InputValueContextProvider } from '@/context'
 import { HomePage } from '@/pages'
 
 function App() {
   return (
     <FileSystemContextProvider>
-      <HomePage />
+      <InputValueContextProvider>
+        <HomePage />
+      </InputValueContextProvider>
     </FileSystemContextProvider>
   )
 }
